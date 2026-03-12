@@ -31,9 +31,9 @@ jobs:
           set -euo pipefail
           PKG_VERSION=$(date -u +'%y.%j')
           PKG_RELEASE=$(date -u +'%s' | cut -c6-10)
-          COMBINED_VERSION="${PKG_VERSION}-r${PKG_RELEASE}"
+          COMBINED_VERSION="v${PKG_VERSION}-r${PKG_RELEASE}"
           
-          echo "tag_name=v${COMBINED_VERSION}" >> "$GITHUB_OUTPUT"
+          echo "tag_name=${COMBINED_VERSION}" >> "$GITHUB_OUTPUT"
           echo "main_version=$PKG_VERSION" >> "$GITHUB_OUTPUT"
           echo "main_full_version=$COMBINED_VERSION" >> "$GITHUB_OUTPUT"
                     
@@ -122,7 +122,7 @@ jobs:
 
           echo "Patched Makefile:"
           grep -E 'PKG_VERSION|PKG_RELEASE' "$MF"
-          echo "version=${PKG_VERSION}-r${PKG_RELEASE}" >> $GITHUB_OUTPUT
+          echo "version=v${PKG_VERSION}-r${PKG_RELEASE}" >> $GITHUB_OUTPUT
           
       - name: 🧮 Compute ARCH
         run: |
@@ -178,8 +178,8 @@ jobs:
       - name: 🗃️ Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ needs.build.outputs.version }}
-          name: Build-v${{ needs.build.outputs.version }}
+          tag_name: ${{ needs.build.outputs.version }}
+          name: Build-${{ needs.build.outputs.version }}
           files: |
             ./release-assets/**/*.ipk
             ./release-assets/**/*.apk
@@ -222,5 +222,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add 24.10/luci/ 25.12/luci
-          git commit -m "Update $CURRENT_PKG to v${{ needs.build.outputs.version }}" || echo "No changes"
+          git commit -m "Update $CURRENT_PKG to ${{ needs.build.outputs.version }}" || echo "No changes"
           git push
